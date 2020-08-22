@@ -33,11 +33,11 @@
 
 ;; Font and frame size
 (set-face-font 'default "Roboto Mono Light 14")
-(setq default-frame-alist
-      (append (list '(width  . 72) '(height . 40)
-                    '(vertical-scroll-bars . nil)
-                    '(internal-border-width . 24)
-                    '(font . "Roboto Mono Light 14"))))
+;; (setq default-frame-alist
+;;       (append (list '(width  . 72) '(height . 40)
+;;                     '(vertical-scroll-bars . nil)
+;;                     '(internal-border-width . 24)
+;;                     '(font . "Roboto Mono Light 14"))))
 (set-frame-parameter (selected-frame)
                      'internal-border-width 24)
 
@@ -80,11 +80,11 @@
 (defun set-face (face style)
   "Reset a face and make it inherit style."
   (set-face-attribute face nil
-   :foreground 'unspecified :background 'unspecified
-   :family     'unspecified :slant      'unspecified
-   :weight     'unspecified :height     'unspecified
-   :underline  'unspecified :overline   'unspecified
-   :box        'unspecified :inherit    style))
+                      :foreground 'unspecified :background 'unspecified
+                      :family     'unspecified :slant      'unspecified
+                      :weight     'unspecified :height     'unspecified
+                      :underline  'unspecified :overline   'unspecified
+                      :box        'unspecified :inherit    style))
 
 ;; A theme is fully defined by these six faces 
 (defgroup elegance nil
@@ -133,11 +133,11 @@ abused anyway)."
 :group 'elegance)
 
 (defface face-subtle nil
-"Subtle face is used to suggest a physical area on the screen.
+  "Subtle face is used to suggest a physical area on the screen.
 It is important to not disturb too strongly the reading of
 information and this can be made by setting a very light
 background color that is barely perceptible."
-:group 'elegance)
+  :group 'elegance)
 
 
 ;; Mode line (this might be slow because of the "☰" that requires substitution)
@@ -150,26 +150,32 @@ background color that is barely perceptible."
 (defun mode-line-render (left right)
   (let* ((available-width (- (window-width) (length left) )))
     (format (format "%%s %%%ds" available-width) left right)))
-(setq-default mode-line-format
-     '((:eval
-       (mode-line-render
-       (format-mode-line (list
-         (propertize "☰" 'face `(:inherit mode-line-buffer-id)
-                         'help-echo "Mode(s) menu"
-                         'mouse-face 'mode-line-highlight
-                         'local-map   mode-line-major-mode-keymap)
-         " %b "
-         (if (and buffer-file-name (buffer-modified-p))
-             (propertize "(modified)" 'face `(:inherit face-faded)))))
-       (format-mode-line
-        (propertize "%4l:%2c  " 'face `(:inherit face-faded)))))))
+
+(setq-default header-line-format
+              '((:eval
+                 (mode-line-render
+                  (format-mode-line (list
+                                     (propertize "☰" 'face `(:inherit mode-line-buffer-id)
+                                                 'help-echo "Mode(s) menu"
+                                                 'mouse-face 'mode-line-highlight
+                                                 'local-map   mode-line-major-mode-keymap)
+                                     " "
+                                     (if (featurep 'spaceline-segments)
+                                         (spaceline--unicode-number (number-to-string (winum-get-number)))
+                                       (propertize (format "[%d]" (winum-get-number))
+                                                   'face `(:inherit mode-line-emphasis)))
+                                     " %b "
+                                     (if (and buffer-file-name (buffer-modified-p))
+                                         (propertize "(modified)" 'face `(:inherit face-faded)))))
+                  (format-mode-line
+                   (propertize "%4l:%2c  " 'face `(:inherit face-faded)))))))
 
 
 ;; Comment if you want to keep the modeline at the bottom
-(setq-default header-line-format mode-line-format)
+;; (setq-default header-line-format mode-line-format)
 (setq-default mode-line-format'(""))
 
-              
+
 ;; Vertical window divider
 (setq window-divider-default-right-width 3)
 (setq window-divider-default-places 'right-only)
@@ -177,11 +183,11 @@ background color that is barely perceptible."
 
 ;; Modeline
 (defun set-modeline-faces ()
-
+  
   ;; Mode line at top
   (set-face 'header-line                                 'face-strong)
   (set-face-attribute 'header-line nil
-                                :underline (face-foreground 'default))
+                      :underline (face-foreground 'default))
   (set-face-attribute 'mode-line nil
                       :height 10
                       :underline (face-foreground 'default)
@@ -190,30 +196,30 @@ background color that is barely perceptible."
                       :foreground (face-background 'default)
                       :background (face-background 'default))
   (set-face 'mode-line-inactive                            'mode-line)
-  
+
   ;; Mode line at bottom
-  ;; (set-face 'header-line                                 'face-strong)
-  ;; (set-face-attribute 'mode-line nil
-  ;;                     :height 1.0
-  ;;                     :overline (face-background 'default)
-  ;;                     :underline nil
-  ;;                     :foreground (face-foreground 'default)
-  ;;                     :background (face-background 'face-subtle)
-  ;;                     :box `(:line-width 2
-  ;;                            :color ,(face-background 'face-subtle)
-  ;;                            :style nil))
-  ;; (set-face 'mode-line-highlight '(face-popout mode-line))
-  ;; (set-face 'mode-line-emphasis  'face-strong)
-  ;; (set-face-attribute 'mode-line-buffer-id nil :weight 'regular)
-  ;; (set-face-attribute 'mode-line-inactive nil
-  ;;                     :height 1.0
-  ;;                     :overline (face-background 'default)
-  ;;                     :underline nil
-  ;;                     :foreground (face-foreground 'face-faded)
-  ;;                     :background (face-background 'face-subtle)
-  ;;                     :box `(:line-width 2
-  ;;                            :color ,(face-background 'face-subtle)
-  ;;                            :style nil))
+  (set-face 'header-line                                 'face-strong)
+  (set-face-attribute 'mode-line nil
+                      :height 0.1
+                      :overline (face-background 'default)
+                      :underline nil
+                      :foreground (face-foreground 'default)
+                      :background (face-background 'face-subtle)
+                      :box `(:line-width 2
+                                         :color ,(face-background 'face-subtle)
+                                         :style nil))
+  (set-face 'mode-line-highlight '(face-popout mode-line))
+  (set-face 'mode-line-emphasis  'face-strong)
+  (set-face-attribute 'mode-line-buffer-id nil :weight 'regular)
+  (set-face-attribute 'mode-line-inactive nil
+                      :height 1.0
+                      :overline (face-background 'default)
+                      :underline nil
+                      :foreground (face-foreground 'face-faded)
+                      :background (face-background 'face-subtle)
+                      :box `(:line-width 2
+                                         :color ,(face-background 'face-subtle)
+                                         :style nil))
 
 
   (set-face-attribute 'cursor nil
@@ -232,22 +238,22 @@ background color that is barely perceptible."
                       :foreground (face-foreground 'face-faded)
                       :background (face-background 'face-subtle)
                       :box `(:line-width 1
-                             :color ,(face-foreground 'face-faded)
-                             :style nil))
+                                         :color ,(face-foreground 'face-faded)
+                                         :style nil))
   (set-face-attribute 'custom-button-mouse nil
                       :foreground (face-foreground 'default)
                       ;; :background (face-foreground 'face-faded)
                       :inherit 'custom-button
                       :box `(:line-width 1
-                             :color ,(face-foreground 'face-subtle)
-                             :style nil))
+                                         :color ,(face-foreground 'face-subtle)
+                                         :style nil))
   (set-face-attribute 'custom-button-pressed nil
                       :foreground (face-background 'default)
                       :background (face-foreground 'face-salient)
                       :inherit 'face-salient
                       :box `(:line-width 1
-                             :color ,(face-foreground 'face-salient)
-                             :style nil)
+                                         :color ,(face-foreground 'face-salient)
+                                         :style nil)
                       :inverse-video nil))
 
 ;; Light theme 
@@ -495,9 +501,10 @@ function is a convenience wrapper used by `describe-package-1'."
   (set-face 'org-agenda-filter-effort                     'face-faded)
   (set-face 'org-agenda-filter-regexp                     'face-faded)
   (set-face 'org-agenda-filter-tags                       'face-faded)
-  (set-face 'org-agenda-property-face                     'face-faded)
+  ;; (set-face 'org-agenda-property-face                     'face-faded)
   (set-face 'org-agenda-restriction-lock                  'face-faded)
   (set-face 'org-agenda-structure                        'face-faded))
+
 
 ;; org mode
 (with-eval-after-load 'org
@@ -524,8 +531,8 @@ function is a convenience wrapper used by `describe-package-1'."
   (set-face 'org-footnote                                 'face-faded)
   (set-face 'org-formula                                  'face-faded)
   (set-face 'org-headline-done                            'face-faded)
-;;  (set-face 'org-hide                                     'face-faded)
-;;  (set-face 'org-indent                                   'face-faded)
+  ;;  (set-face 'org-hide                                     'face-faded)
+  ;;  (set-face 'org-indent                                   'face-faded)
   (set-face 'org-latex-and-related                        'face-faded)
   (set-face 'org-level-1                                 'face-strong)
   (set-face 'org-level-2                                 'face-strong)
